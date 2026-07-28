@@ -1,7 +1,7 @@
-# Ипользуем версию Java 17 для сборки
+# Используем версию Java 17 для сборки
 FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app
-COPY src/main/java/com/example/absheronikbackend/entity .
+COPY . .
 RUN ./mvnw clean package -DskipTests
 
 # Запускаем готовый jar-файл
