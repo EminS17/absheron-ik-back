@@ -19,7 +19,7 @@ public class StudentController {
     }
 
 
-    @PostMapping
+    @PostMapping("/register")
     public Student registerStudent(@RequestBody Student student) {
         return studentRepository.save(student);
     }
