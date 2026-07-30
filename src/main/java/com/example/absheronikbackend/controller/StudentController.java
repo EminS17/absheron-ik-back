@@ -18,7 +18,8 @@ public class StudentController {
         this.studentRepository = studentRepository;
     }
 
-    @PostMapping("/register")
+
+    @PostMapping
     public Student registerStudent(@RequestBody Student student) {
         return studentRepository.save(student);
     }
