@@ -18,8 +18,8 @@ public class StudentController {
         this.studentRepository = studentRepository;
     }
 
-
-    @PostMapping("/register")
+    // Принимает POST запросы И НА /api/students/register, И НА /api/students
+    @PostMapping({"", "/register"})
     public Student registerStudent(@RequestBody Student student) {
         return studentRepository.save(student);
     }
@@ -29,14 +29,13 @@ public class StudentController {
         return studentRepository.findAll();
     }
 
-    // --- МЕТОД ДЛЯ УДАЛЕНИЯ УЧЕНИКА ПО ID ---
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
         if (studentRepository.existsById(id)) {
             studentRepository.deleteById(id);
-            return ResponseEntity.ok().build(); // Возвращает статус 200 OK
+            return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.notFound().build(); // Возвращает 404, если ID не найден
+            return ResponseEntity.notFound().build();
         }
     }
 }
