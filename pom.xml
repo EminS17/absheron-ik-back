@@ -38,11 +38,18 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- PostgreSQL (оставляем для будущего) -->
+        <!-- PostgreSQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Bucket4j для ограничения количества запросов (Rate Limiting) -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>8.10.1</version>
         </dependency>
 
         <!-- Lombok для сокращения бойлерплейт-кода -->
