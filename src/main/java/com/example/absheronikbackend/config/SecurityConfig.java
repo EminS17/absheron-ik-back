@@ -18,13 +18,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Отключаем CSRF (обязательно для POST)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Включаем поддержку CORS
+                .csrf(csrf -> csrf.disable()) // Отключаем CSRF
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Подключаем правильный CORS
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Разрешаем абсолютно все запросы без авторизации
+                        .anyRequest().permitAll() // Разрешаем доступ ко всем эндпоинтам
                 )
-                .formLogin(form -> form.disable()) // Отключаем форму входа
-                .httpBasic(basic -> basic.disable()); // Отключаем Basic Auth (убирает 401)
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable());
 
         return http.build();
     }
@@ -32,9 +32,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
+
+        // Разрешает внешние запросы с любого домена (включая https://absheronik.com)
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
