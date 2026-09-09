@@ -19,10 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 
-    // Хранилище ведер для каждого IP-адреса
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
-    // Метод создания нового ведра (15 запросов в 1 минуту)
     private Bucket createNewBucket() {
         Bandwidth limit = Bandwidth.classic(15, Refill.greedy(15, Duration.ofMinutes(1)));
         return Bucket.builder().addLimit(limit).build();
@@ -33,28 +31,28 @@ public class RateLimitFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Ограничиваем только POST запросы на регистрацию (или все запросы - на твой выбор)
+        // Пропускаем предварительные OPTIONS-запросы для CORS без проверки лимитов
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String path = request.getRequestURI();
         if (path.startsWith("/api/students")) {
-
             String clientIp = getClientIP(request);
             Bucket bucket = buckets.computeIfAbsent(clientIp, k -> createNewBucket());
 
-            // Пытаемся списать 1 токен
             if (!bucket.tryConsume(1)) {
-                // Если лимит превышен — возвращаем 429 Too Many Requests
                 response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
                 response.setContentType("text/plain;charset=UTF-8");
-                response.getWriter().write("Çoxlu sorğu göndərdiniz! Zəhmət olmasa 1 dəqiqə gözləyin. (Cлишком много запросов!)");
+                response.getWriter().write("Çoxlu sorğu göndərdiniz! Zəhmət olmasa 1 dəqiqə gözləyin.");
                 return;
             }
         }
 
-        // Если лимит не превышен — пропускаем запрос дальше
         filterChain.doFilter(request, response);
     }
 
-    // Получаем реальный IP-адрес клиента (учитывая прокси Render / Cloudflare / Vercel)
     private String getClientIP(HttpServletRequest request) {
         String xfHeader = request.getHeader("X-Forwarded-For");
         if (xfHeader == null || xfHeader.isEmpty()) {
