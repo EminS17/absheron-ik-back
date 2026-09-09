@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/students")
-@CrossOrigin(origins = {"https://absheronik.com", "http://localhost:5173", "http://localhost:3000"}, allowCredentials = "true")
 public class StudentController {
 
     private final StudentRepository studentRepository;
@@ -18,15 +17,16 @@ public class StudentController {
         this.studentRepository = studentRepository;
     }
 
-    // Принимает POST запросы И НА /api/students/register, И НА /api/students
+    // Принимает регистрацию и на /api/students, и на /api/students/register
     @PostMapping({"", "/register"})
-    public Student registerStudent(@RequestBody Student student) {
-        return studentRepository.save(student);
+    public ResponseEntity<Student> registerStudent(@RequestBody Student student) {
+        Student savedStudent = studentRepository.save(student);
+        return ResponseEntity.ok(savedStudent);
     }
 
     @GetMapping
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public ResponseEntity<List<Student>> getAllStudents() {
+        return ResponseEntity.ok(studentRepository.findAll());
     }
 
     @DeleteMapping("/{id}")
